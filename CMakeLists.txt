@@ -6,6 +6,7 @@ find_package(LibObs REQUIRED)
 
 set(obs-spice_SOURCES
 	obs-spice.c
+	obs-spice-source.c
 )
 
 add_library(obs-spice MODULE ${obs-spice_SOURCES})
