@@ -77,7 +77,7 @@ static uint32_t spice_source_height(void *data) {
 }
 
 static void spice_source_render(void *data, gs_effect_t *effect) {
-	struct image_source *context = data;
+	struct spice_source *context = data;
 }
 
 struct obs_source_info obs_spice_source = {
