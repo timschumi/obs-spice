@@ -5,6 +5,9 @@ struct spice_source {
 	obs_source_t *source;
 	SpiceSession *session;
 	bool session_connected;
+
+	SpiceMainChannel *main_channel;
+	SpiceDisplayChannel *display_channel;
 };
 
 static const char *spice_source_name(void *type) {
@@ -17,6 +20,16 @@ static obs_properties_t *spice_source_properties(void *data) {
 	obs_properties_add_text(props, "uri", obs_module_text("PropUri"), OBS_TEXT_DEFAULT);
 
 	return props;
+}
+
+static void spice_source_on_channel_new(SpiceSession *session, SpiceChannel *channel, struct spice_source *context) {
+	if (SPICE_IS_MAIN_CHANNEL(channel)) {
+		context->main_channel = SPICE_MAIN_CHANNEL(channel);
+	}
+
+	if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
+		context->display_channel = SPICE_DISPLAY_CHANNEL(channel);
+	}
 }
 
 static void spice_source_disconnect(struct spice_source *context) {
@@ -61,6 +74,8 @@ static void *spice_source_create(obs_data_t *settings, obs_source_t *source) {
 	context->session_connected = false;
 	context->session = spice_session_new();
 	g_object_set(context->session, "read-only", TRUE, NULL);
+
+	g_signal_connect(context->session, "channel-new", G_CALLBACK(spice_source_on_channel_new), context);
 
 	// Dial in the settings
 	spice_source_update(context, settings);
