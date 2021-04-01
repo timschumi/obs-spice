@@ -6,10 +6,15 @@ project(obs-spice)
 
 find_package(LibObs REQUIRED)
 find_package(GLib REQUIRED)
+find_package(GTK3 REQUIRED)
 find_package(Spice REQUIRED)
 
 if(NOT GLib_FOUND)
 	message(FATAL_ERROR "GLIB2 is required for this project")
+endif()
+
+if (NOT GTK3_FOUND)
+	message(FATAL_ERROR "GTK3 is required for this project")
 endif()
 
 if(NOT SPICE_FOUND)
@@ -25,6 +30,7 @@ add_library(obs-spice MODULE ${obs-spice_SOURCES})
 target_include_directories(obs-spice
 	PRIVATE ${GLib_INCLUDE_DIRS}
 	PRIVATE ${GMODULE_INCLUDE_DIR}
+	PRIVATE ${GTK3_INCLUDE_DIRS}
 	PRIVATE ${SPICE_INCLUDE_DIRS}
 )
 target_link_libraries(obs-spice
