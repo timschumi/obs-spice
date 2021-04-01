@@ -10,6 +10,14 @@ static const char *spice_source_name(void *type) {
 	return obs_module_text("SpiceInput");
 }
 
+static obs_properties_t *spice_source_properties(void *data) {
+	obs_properties_t *props = obs_properties_create();
+
+	obs_properties_add_text(props, "uri", obs_module_text("PropUri"), OBS_TEXT_DEFAULT);
+
+	return props;
+}
+
 static void spice_source_update(void *data, obs_data_t *settings) {
 	struct spice_source *context = data;
 }
@@ -55,6 +63,7 @@ struct obs_source_info obs_spice_source = {
 	.type         = OBS_SOURCE_TYPE_INPUT,
 	.output_flags = OBS_SOURCE_VIDEO,
 	.get_name     = spice_source_name,
+	.get_properties = spice_source_properties,
 	.create       = spice_source_create,
 	.destroy      = spice_source_destroy,
 	.update       = spice_source_update,
