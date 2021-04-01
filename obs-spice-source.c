@@ -41,6 +41,16 @@ static void spice_source_connect(struct spice_source *context) {
 
 static void spice_source_update(void *data, obs_data_t *settings) {
 	struct spice_source *context = data;
+
+	bool reconnect = context->session_connected;
+
+	spice_source_disconnect(context);
+
+	g_object_set(context->session, "uri", obs_data_get_string(settings, "uri"), NULL);
+
+	if (reconnect) {
+		spice_source_connect(context);
+	}
 }
 
 static void *spice_source_create(obs_data_t *settings, obs_source_t *source) {
@@ -51,6 +61,11 @@ static void *spice_source_create(obs_data_t *settings, obs_source_t *source) {
 	context->session_connected = false;
 	context->session = spice_session_new();
 	g_object_set(context->session, "read-only", TRUE, NULL);
+
+	// Dial in the settings
+	spice_source_update(context, settings);
+
+	spice_source_connect(context);
 
 	return context;
 }
