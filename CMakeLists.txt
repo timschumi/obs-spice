@@ -1,8 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 project(obs-spice)
 
 find_package(LibObs REQUIRED)
+find_package(GLib REQUIRED)
+find_package(Spice REQUIRED)
+
+if(NOT GLib_FOUND)
+	message(FATAL_ERROR "GLIB2 is required for this project")
+endif()
+
+if(NOT SPICE_FOUND)
+	message(FATAL_ERROR "SPICE is required for this project")
+endif()
 
 set(obs-spice_SOURCES
 	obs-spice.c
@@ -10,8 +22,14 @@ set(obs-spice_SOURCES
 )
 
 add_library(obs-spice MODULE ${obs-spice_SOURCES})
+target_include_directories(obs-spice
+	PRIVATE ${GLib_INCLUDE_DIRS}
+	PRIVATE ${GMODULE_INCLUDE_DIR}
+	PRIVATE ${SPICE_INCLUDE_DIRS}
+)
 target_link_libraries(obs-spice
 	libobs
+	${SPICE_LIBRARIES}
 )
 
 set_target_properties(obs-spice PROPERTIES PREFIX "")

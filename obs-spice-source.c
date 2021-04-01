@@ -1,7 +1,9 @@
 #include <obs-module.h>
+#include <spice-client.h>
 
 struct spice_source {
 	obs_source_t *source;
+	SpiceSession *session;
 };
 
 static const char *spice_source_name(void *type) {
@@ -15,11 +17,22 @@ static void spice_source_update(void *data, obs_data_t *settings) {
 static void *spice_source_create(obs_data_t *settings, obs_source_t *source) {
 	struct spice_source *context = bzalloc(sizeof(struct spice_source));
 	context->source = source;
+
+	// Set up session
+	context->session = spice_session_new();
+	g_object_set(context->session, "read-only", TRUE, NULL);
+
 	return context;
 }
 
 static void spice_source_destroy(void *data) {
 	struct spice_source *context = data;
+
+	if (context->session) {
+		spice_session_disconnect(context->session);
+		g_clear_object(&context->session);
+	}
+
 	bfree(context);
 }
 
